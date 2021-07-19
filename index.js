@@ -3,37 +3,48 @@ let _createElement;
 let _isCanvasBlank;
 let downloadPdf;
 
-const domToImage = require('dom-to-image');
-const jsPDF = require('jspdf');
+const domToImage = require("dom-to-image");
+const jsPDF = require("jspdf");
 
 _cloneNode = (node, javascriptEnabled) => {
   let child;
   let clone;
-  clone = node.nodeType === 3 ? document.createTextNode(node.nodeValue) : node.cloneNode(false);
+  clone =
+    node.nodeType === 3
+      ? document.createTextNode(node.nodeValue)
+      : node.cloneNode(false);
   child = node.firstChild;
   while (child) {
-    if (javascriptEnabled === true || child.nodeType !== 1 || child.nodeName !== 'SCRIPT') {
+    if (
+      javascriptEnabled === true ||
+      child.nodeType !== 1 ||
+      child.nodeName !== "SCRIPT"
+    ) {
       clone.appendChild(_cloneNode(child, javascriptEnabled));
     }
     child = child.nextSibling;
   }
   if (node.nodeType === 1) {
-    if (node.nodeName === 'CANVAS') {
+    if (node.nodeName === "CANVAS") {
       clone.width = node.width;
       clone.height = node.height;
-      clone.getContext('2d').drawImage(node, 0, 0);
-    } else if (node.nodeName === 'TEXTAREA' || node.nodeName === 'SELECT') {
+      clone.getContext("2d").drawImage(node, 0, 0);
+    } else if (node.nodeName === "TEXTAREA" || node.nodeName === "SELECT") {
       clone.value = node.value;
     }
-    clone.addEventListener('load', (() => {
-      clone.scrollTop = node.scrollTop;
-      clone.scrollLeft = node.scrollLeft;
-    }), true);
+    clone.addEventListener(
+      "load",
+      () => {
+        clone.scrollTop = node.scrollTop;
+        clone.scrollLeft = node.scrollLeft;
+      },
+      true
+    );
   }
   return clone;
 };
 
-_createElement = (tagName, {className, innerHTML, style}) => {
+_createElement = (tagName, { className, innerHTML, style }) => {
   let el;
   let i;
   let key;
@@ -44,7 +55,7 @@ _createElement = (tagName, {className, innerHTML, style}) => {
   }
   if (innerHTML) {
     el.innerHTML = innerHTML;
-    scripts = el.getElementsByTagName('script');
+    scripts = el.getElementsByTagName("script");
     i = scripts.length;
     while (i-- > 0) {
       scripts[i].parentNode.removeChild(scripts[i]);
@@ -56,14 +67,14 @@ _createElement = (tagName, {className, innerHTML, style}) => {
   return el;
 };
 
-_isCanvasBlank = canvas => {
+_isCanvasBlank = (canvas) => {
   let blank;
   let ctx;
-  blank = document.createElement('canvas');
+  blank = document.createElement("canvas");
   blank.width = canvas.width;
   blank.height = canvas.height;
-  ctx = blank.getContext('2d');
-  ctx.fillStyle = '#FFFFFF';
+  ctx = blank.getContext("2d");
+  ctx.fillStyle = "#FFFFFF";
   ctx.fillRect(0, 0, blank.width, blank.height);
   return canvas.toDataURL() === blank.toDataURL();
 };
@@ -85,38 +96,46 @@ downloadPdf = (dom, options, cb) => {
   let overlayCSS;
   let pageHeightPx;
   let proxyUrl;
-  let compression = 'NONE';
+  let compression = "NONE";
 
-  ({filename, excludeClassNames = [], excludeTagNames = ['button', 'input', 'select'], overrideWidth, proxyUrl, compression} = options);
+  ({
+    filename,
+    excludeClassNames = [],
+    excludeTagNames = ["button", "input", "select"],
+    overrideWidth,
+    cacheBust,
+    proxyUrl,
+    compression,
+  } = options);
 
   overlayCSS = {
-    position: 'fixed',
+    position: "fixed",
     zIndex: 1000,
     opacity: 0,
     left: 0,
     right: 0,
     bottom: 0,
     top: 0,
-    backgroundColor: 'rgba(0,0,0,0.8)'
+    backgroundColor: "rgba(0,0,0,0.8)",
   };
   if (overrideWidth) {
     overlayCSS.width = `${overrideWidth}px`;
   }
   containerCSS = {
-    position: 'absolute',
+    position: "absolute",
     left: 0,
     right: 0,
     top: 0,
-    height: 'auto',
-    margin: 'auto',
-    overflow: 'auto',
-    backgroundColor: 'white'
+    height: "auto",
+    margin: "auto",
+    overflow: "auto",
+    backgroundColor: "white",
   };
-  overlay = _createElement('div', {
-    style: overlayCSS
+  overlay = _createElement("div", {
+    style: overlayCSS,
   });
-  container = _createElement('div', {
-    style: containerCSS
+  container = _createElement("div", {
+    style: containerCSS,
   });
   container.appendChild(_cloneNode(dom));
   overlay.appendChild(container);
@@ -124,11 +143,11 @@ downloadPdf = (dom, options, cb) => {
   innerRatio = a4Height / a4Width;
   containerWidth = overrideWidth || container.getBoundingClientRect().width;
   pageHeightPx = Math.floor(containerWidth * innerRatio);
-  elements = container.querySelectorAll('*');
+  elements = container.querySelectorAll("*");
 
   for (let i = 0, len = excludeClassNames.length; i < len; i++) {
     const clName = excludeClassNames[i];
-    container.querySelectorAll(`.${clName}`).forEach(function(a) {
+    container.querySelectorAll(`.${clName}`).forEach(function (a) {
       return a.remove();
     });
   }
@@ -145,7 +164,7 @@ downloadPdf = (dom, options, cb) => {
     }
   }
 
-  Array.prototype.forEach.call(elements, el => {
+  Array.prototype.forEach.call(elements, (el) => {
     let clientRect;
     let endPage;
     let nPages;
@@ -155,7 +174,7 @@ downloadPdf = (dom, options, cb) => {
     rules = {
       before: false,
       after: false,
-      avoid: true
+      avoid: true,
     };
     clientRect = el.getBoundingClientRect();
     if (rules.avoid && !rules.before) {
@@ -168,11 +187,11 @@ downloadPdf = (dom, options, cb) => {
       }
       // Before: Create a padding div to push the element to the next page.
       if (rules.before) {
-        pad = _createElement('div', {
+        pad = _createElement("div", {
           style: {
-            display: 'block',
-            height: `${pageHeightPx - clientRect.top % pageHeightPx}px`
-          }
+            display: "block",
+            height: `${pageHeightPx - (clientRect.top % pageHeightPx)}px`,
+          },
         });
         return el.parentNode.insertBefore(pad, el);
       }
@@ -180,7 +199,7 @@ downloadPdf = (dom, options, cb) => {
   });
 
   // Remove unnecessary elements from result pdf
-  filterFn = ({classList, tagName}) => {
+  filterFn = ({ classList, tagName }) => {
     let cName;
     let j;
     let len;
@@ -197,69 +216,82 @@ downloadPdf = (dom, options, cb) => {
     return excludeTagNames.indexOf(ref) < 0;
   };
 
-  return domToImage.toCanvas(container, {
-    filter: filterFn,
-    proxy: proxyUrl
-  }).then(canvas => {
-    let h;
-    let imgData;
-    let nPages;
-    let page;
-    let pageCanvas;
-    let pageCtx;
-    let pageHeight;
-    let pdf;
-    let pxFullHeight;
-    let w;
-    // Remove overlay
-    document.body.removeChild(overlay);
-    // Initialize the PDF.
-    pdf = new jsPDF('p', 'pt', 'a4');
-    // Calculate the number of pages.
-    pxFullHeight = canvas.height;
-    nPages = Math.ceil(pxFullHeight / pageHeightPx);
-    // Define pageHeight separately so it can be trimmed on the final page.
-    pageHeight = a4Height;
-    pageCanvas = document.createElement('canvas');
-    pageCtx = pageCanvas.getContext('2d');
-    pageCanvas.width = canvas.width;
-    pageCanvas.height = pageHeightPx;
-    page = 0;
-    while (page < nPages) {
-      if (page === nPages - 1 && pxFullHeight % pageHeightPx !== 0) {
-        pageCanvas.height = pxFullHeight % pageHeightPx;
-        pageHeight = pageCanvas.height * a4Width / pageCanvas.width;
-      }
-      w = pageCanvas.width;
-      h = pageCanvas.height;
-      pageCtx.fillStyle = 'white';
-      pageCtx.fillRect(0, 0, w, h);
-      pageCtx.drawImage(canvas, 0, page * pageHeightPx, w, h, 0, 0, w, h);
-      // Don't create blank pages
-      if (_isCanvasBlank(pageCanvas)) {
+  return domToImage
+    .toCanvas(container, {
+      filter: filterFn,
+      proxy: proxyUrl,
+      cacheBust: cacheBust,
+    })
+    .then((canvas) => {
+      let h;
+      let imgData;
+      let nPages;
+      let page;
+      let pageCanvas;
+      let pageCtx;
+      let pageHeight;
+      let pdf;
+      let pxFullHeight;
+      let w;
+      // Remove overlay
+      document.body.removeChild(overlay);
+      // Initialize the PDF.
+      pdf = new jsPDF("p", "pt", "a4");
+      // Calculate the number of pages.
+      pxFullHeight = canvas.height;
+      nPages = Math.ceil(pxFullHeight / pageHeightPx);
+      // Define pageHeight separately so it can be trimmed on the final page.
+      pageHeight = a4Height;
+      pageCanvas = document.createElement("canvas");
+      pageCtx = pageCanvas.getContext("2d");
+      pageCanvas.width = canvas.width;
+      pageCanvas.height = pageHeightPx;
+      page = 0;
+      while (page < nPages) {
+        if (page === nPages - 1 && pxFullHeight % pageHeightPx !== 0) {
+          pageCanvas.height = pxFullHeight % pageHeightPx;
+          pageHeight = (pageCanvas.height * a4Width) / pageCanvas.width;
+        }
+        w = pageCanvas.width;
+        h = pageCanvas.height;
+        pageCtx.fillStyle = "white";
+        pageCtx.fillRect(0, 0, w, h);
+        pageCtx.drawImage(canvas, 0, page * pageHeightPx, w, h, 0, 0, w, h);
+        // Don't create blank pages
+        if (_isCanvasBlank(pageCanvas)) {
+          ++page;
+          continue;
+        }
+        // Add the page to the PDF.
+        if (page) {
+          pdf.addPage();
+        }
+        imgData = pageCanvas.toDataURL("image/PNG");
+        pdf.addImage(
+          imgData,
+          "PNG",
+          0,
+          0,
+          a4Width,
+          pageHeight,
+          undefined,
+          compression
+        );
         ++page;
-        continue;
       }
-      // Add the page to the PDF.
-      if (page) {
-        pdf.addPage();
+      if (typeof cb === "function") {
+        cb();
       }
-      imgData = pageCanvas.toDataURL('image/PNG');
-      pdf.addImage(imgData, 'PNG', 0, 0, a4Width, pageHeight, undefined, compression);
-      ++page;
-    }
-    if (typeof cb === "function") {
-      cb();
-    }
-    return pdf.save(filename);
-  }).catch(error => {
-    // Remove overlay
-    document.body.removeChild(overlay);
-    if (typeof cb === "function") {
-      cb();
-    }
-    return console.error(error);
-  });
+      return pdf.save(filename);
+    })
+    .catch((error) => {
+      // Remove overlay
+      document.body.removeChild(overlay);
+      if (typeof cb === "function") {
+        cb();
+      }
+      return console.error(error);
+    });
 };
 
 module.exports = downloadPdf;

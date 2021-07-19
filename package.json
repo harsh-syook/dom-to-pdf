@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ovvn/dom-to-pdf.git"
+    "url": "git+https://github.com/harsh-syook/dom-to-pdf.git"
   },
   "dependencies": {
     "dom-to-image": "git://github.com/dmapper/dom-to-image",
@@ -27,13 +27,12 @@
     "page-break"
   ],
   "author": {
-    "name": "Osman Mazinov",
-    "email": "omazinov@gmail.com",
-    "url": "https://ovvn.github.io"
+    "name": "Harsh",
+    "email": "dhaulaharsh@gmail.com"
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/ovvn/dom-to-pdf/issues"
+    "url": "https://github.com/harsh-syook/dom-to-pdf/issues"
   },
-  "homepage": "https://github.com/ovvn/dom-to-pdf#readme"
+  "homepage": "https://github.com/harsh-syook/dom-to-pdf#readme"
 }
