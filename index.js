@@ -3,7 +3,7 @@ let _createElement;
 let _isCanvasBlank;
 let downloadPdf;
 
-const domToImage = require("dom-to-image");
+const html2canvas = require("html2canvas");
 const jsPDF = require("jspdf");
 
 _cloneNode = (node, javascriptEnabled) => {
@@ -216,12 +216,9 @@ downloadPdf = (dom, options, cb) => {
     return excludeTagNames.indexOf(ref) < 0;
   };
 
-  return domToImage
-    .toCanvas(container, {
-      filter: filterFn,
-      proxy: proxyUrl,
-      cacheBust: cacheBust,
-    })
+  return html2canvas(container, {
+    useCORS: true,
+  })
     .then((canvas) => {
       let h;
       let imgData;
