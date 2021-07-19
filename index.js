@@ -1,6 +1,6 @@
 "use strict";
 
-var _cloneNode, _createElement, _isCanvasBlank, domToImage, jsPDF, downloadPdf;
+var _cloneNode, _createElement, _isCanvasBlank, html2canvas, jsPDF, downloadPdf;
 
 html2canvas = require("html2canvas");
 jsPDF = require("jspdf");
